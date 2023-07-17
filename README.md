@@ -20,6 +20,8 @@ DELETE /notes
 ```
 git clone https://github.com/procode2/accunotes.git
 ```
+- Create a `.env` file from `.env.sample` in the root of the project with your credentials
+Note: These credentials are used for creating the db in docker.
 
 - Run with docker compose
 ```
