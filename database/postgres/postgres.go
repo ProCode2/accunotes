@@ -46,7 +46,7 @@ func NewPostgresStore() *PostgresStore {
 	}
 	fmt.Println("DB_USER", os.Getenv("DB_USER"))
 
-	dsn := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable",
+	dsn := fmt.Sprintf("postgres://%s:%s@db:%s/%s?sslmode=disable",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_PORT"),

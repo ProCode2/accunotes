@@ -2,21 +2,16 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
 	"github.com/procode2/accunotes/models"
 	"github.com/uptrace/bun"
 )
 
-func (p *PostgresStore) GetAllNotesForUser(search string) ([]*models.Note, error) {
-	notes := make([]*models.Note, 0)
+func (p *PostgresStore) GetAllNotesForUser(userId uint32) ([]*models.NoteView, error) {
+	notes := make([]*models.NoteView, 0)
 	ctx := context.Background()
-	q := p.db.NewSelect().Model(&notes)
-	if search != "" {
-		q = q.Where("? ILIKE ?", bun.Ident("title"), "%"+search+"%")
-	}
-	err := q.Scan(ctx)
+	err := p.db.NewSelect().Model((*models.Note)(nil)).Column("id", "note").Where("? = ?", bun.Ident("user_id"), userId).Scan(ctx, &notes)
 	if err != nil {
 		return nil, err
 	}
@@ -26,17 +21,8 @@ func (p *PostgresStore) GetAllNotesForUser(search string) ([]*models.Note, error
 
 func (p *PostgresStore) CreateNewNote(note *models.Note) (*models.Note, error) {
 	ctx := context.Background()
-	err := p.db.RunInTx(ctx, &sql.TxOptions{}, func(ctx context.Context, tx bun.Tx) error {
 
-		_, err := tx.NewInsert().Model(note).Exec(ctx)
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}
-
-		return err
-
-	})
+	_, err := p.db.NewInsert().Model(note).Exec(ctx)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -45,31 +31,14 @@ func (p *PostgresStore) CreateNewNote(note *models.Note) (*models.Note, error) {
 	return note, nil
 }
 
-func (p *PostgresStore) UpdateNote(note *models.Note) error {
-	// TODO
-	return nil
-}
-
-func (p *PostgresStore) GetNoteById(noteId int64) (*models.Note, error) {
-	note := &models.Note{}
-
+func (p *PostgresStore) DeleteNoteById(noteId uint32) error {
 	ctx := context.Background()
-	err := p.db.RunInTx(ctx, &sql.TxOptions{}, func(ctx context.Context, tx bun.Tx) error {
 
-		err := tx.NewSelect().Model(note).Where("? = ?", bun.Ident("id"), noteId).Scan(ctx)
-		if err != nil {
-			return err
-		}
-		return err
-	})
+	_, err := p.db.NewDelete().Model((*models.Note)(nil)).Where("id = ?", noteId).Exec(ctx)
 	if err != nil {
 		fmt.Println(err)
-		return nil, err
+		return err
 	}
-	return note, nil
-}
 
-func (p *PostgresStore) DeleteNoteById(noteId int64) error {
-	// TODO
 	return nil
 }

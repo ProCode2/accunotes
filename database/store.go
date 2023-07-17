@@ -10,9 +10,7 @@ type Storer interface {
 	GetUserById(userId string) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
 
-	GetAllNotesForUser(search string) ([]*models.Note, error)
+	GetAllNotesForUser(userId uint32) ([]*models.NoteView, error)
 	CreateNewNote(note *models.Note) (*models.Note, error)
-	UpdateNote(note *models.Note) error
-	GetNoteById(noteId int64) (*models.Note, error)
-	DeleteNoteById(noteId int64) error
+	DeleteNoteById(noteId uint32) error
 }
