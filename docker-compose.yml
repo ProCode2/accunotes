@@ -2,7 +2,8 @@ version: '3.8'
 
 services:
   api:
-    build: .
+    image: procode1/accunotes_api:latest
+    restart: on-failure
     depends_on:
       - db
     ports:

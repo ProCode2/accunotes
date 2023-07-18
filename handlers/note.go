@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/procode2/accunotes/database"
 	"github.com/procode2/accunotes/models"
@@ -45,8 +46,11 @@ func HandlePostNote(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
+	if strings.TrimSpace(body.Note) == "" {
+		http.Error(w, "Empty notes can not be created", http.StatusBadRequest)
+	}
 	note := &models.Note{
-		Note:   body.Note,
+		Note:   strings.TrimSpace(body.Note),
 		UserId: userId,
 	}
 	note, err := database.Db.CreateNewNote(note)
